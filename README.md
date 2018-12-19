@@ -16,7 +16,7 @@ Otherwise, it only makes use of features available in C++ standard library.
 
 ## Testing
 
-To TEST the utility, you can check out "RinexReader.cpp" file which provides step-by-step instructions. I have also included sample Rinex Files (Observation and Navigation) in the "Input" Folder.
+To TEST the utility, you can check out "RinexReader.cpp" which provides step-by-step instructions. I have also included sample RINEX files (Observation and Navigation) in the "Input" Folder.
 
 ## License
 
