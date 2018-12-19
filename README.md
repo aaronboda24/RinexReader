@@ -2,12 +2,12 @@
 
 ## Synopsis
 
-RINEX file format is used to store GNSS observations in a standardized format. 
+RINEX is a standardazied file format which is used to store raw GNSS observation data. 
 You can find more info here: https://kb.igs.org/hc/en-us/articles/115003980188-RINEX-2-11
 
 ## Motivation
 
-Making a RINEX Reader often becomes a redundant and time-consuming part for someone new starting out with GNSS processing. This utility will help one read the observation files to use for their GNSS solution processing. 
+Making a RINEX Reader often becomes a redundant and time-consuming part for someone new starting out with GNSS processing. This utility will help one read and organize the observation files to use for their processing. 
 
 ## Installation
 
