@@ -1,26 +1,26 @@
 #pragma once
 /*
-* R2ObsData.h
+* Rinex2Obs.h
 * Read and organize Rinex v2 file in epochwise manner
-*
 *  Created on: Jun 16, 2018
-*      Author: Aaron
+*  updated on: Jan 21, 2019
+*      Author: Aaron Boda
 */
 
 #include "pch.h"
 #include "TimeUtils.h"
 #include "StringUtils.h"
 
-#ifndef R2OBSDATA_H_
-#define R2OBSDATA_H_
+#ifndef RINEX2OBS_H_
+#define RINEX2OBS_H_
 
-class R2ObsData
+class Rinex2Obs
 {
 public:
 	// CONSTRUCTOR
-	R2ObsData();
+	Rinex2Obs();
 	// DESTRUCTOR
-	~R2ObsData();
+	~Rinex2Obs();
 
 	// Data Structures
 	// To store important header information
@@ -46,21 +46,21 @@ public:
 	}; 
 
 	// Attributes
-	ObsHeaderInfo header;
-	ObsEpochInfo obsData;
+	ObsHeaderInfo _header;
+	ObsEpochInfo _obsDataGPS;
 
-	std::vector<std::string> obsTypesGPS;
-	std::map<int, std::vector<double>> obsGPS;
+	std::vector<std::string> _obsTypesGPS;
+	std::map<int, std::vector<double>> _obsGPS;
 
 	// Functions
 	void clearObs();
 	void clearHeader();
 	void obsHeader(std::ifstream& infile);
 	void obsEpoch(std::ifstream& infile, std::ofstream& logfile, int nObsTypes);
-	std::map<int, double> R2ObsData::specificObsMapper(std::map<int, std::vector<double>> obsGPS, std::vector<std::string> obsTypes, std::string specificObs);
+	std::map<int, double> Rinex2Obs::specificObsMapper(std::map<int, std::vector<double>> obsGPS, std::vector<std::string> obsTypes, std::string specificObs);
 
 private:
 
 };
 
-#endif /* R2OBSDATA_H_ */
+#endif /* RINEX2OBS_H_ */

@@ -1,19 +1,18 @@
 /*
-* R2NavData.h
+* Rinex2Nav.h
 * Read and organize Rinex v2 navigation/ephemeris file
-*
 *  Created on: Jun 12, 2018
 *      Author: Aaron Boda
 */
 
 #include "pch.h"
-#include "R2NavData.h"
+#include "Rinex2Nav.h"
 
 using namespace std;
 
 // CONSTRUCTOR AND DESTRUCTOR DEFINITIONS
-R2NavData::R2NavData() {}
-R2NavData::~R2NavData() {}
+Rinex2Nav::Rinex2Nav() {}
+Rinex2Nav::~Rinex2Nav() {}
 
 // A function to help with organizing GPS header
 // Works for the alpha/beta ionospheric constants and time correction
@@ -58,8 +57,23 @@ vector<double> rinex2NavDataSplitter(string line) {
 	return data;
 }
 
+// Epoch Time Matcher, returns index of most appropriate Navigation vector
+int Rinex2Nav::EpochMatcher(double obsTime, std::vector<Rinex2Nav::DataGPS> NAV) {
+	// Initialize time difference variable using arbitrary large number
+	double diff = 1000000; int index = 0;
+	for (unsigned i = 0; i < NAV.size(); i++) {
+		double new_diff = fabs(obsTime - NAV.at(i).gpsTime);
+		if (new_diff < diff) {
+			diff = new_diff; // update difference
+			index = i; // save index
+		}
+	}
+	// Index of most appropriate Nav vector
+	return index;
+}
+
 // Navigation Body Organizer for GPS Navigation File
-R2NavData::DataGPS epochNavOrganizer(vector<string> block) {
+Rinex2Nav::DataGPS epochNavOrganizer(vector<string> block) {
 	int prn = stoi(block[0].substr(0, 2));
 	vector<double> epochInfo = rinex2EpochTimeOrganizer(block[0]);
 	string line = block[0].substr(22, block[0].length());
@@ -68,7 +82,7 @@ R2NavData::DataGPS epochNavOrganizer(vector<string> block) {
 	}
 	vector<double> parameters = rinex2NavDataSplitter(line);
 	// Storing Values into GPS Data Structure
-	R2NavData::DataGPS GPS;
+	Rinex2Nav::DataGPS GPS;
 	GPS.isAvailable = true;
 	GPS.PRN = prn;
 	GPS.epochInfo = epochInfo;
@@ -106,7 +120,7 @@ R2NavData::DataGPS epochNavOrganizer(vector<string> block) {
 }
 
 // Reader for GPS navigation file
-void R2NavData::readNav(std::ifstream& infile) {
+void Rinex2Nav::readNav(std::ifstream& infile) {
 	// String tokens to look for
 	const string sTokenIALPHA = "ION ALPHA";
 	const string sTokenIBETA = "ION BETA";
@@ -140,11 +154,11 @@ void R2NavData::readNav(std::ifstream& infile) {
 		// Finding Ionophseric Constants as per new format
 		else if (found_ALPHA != string::npos) {
 			vector<double> ialpha = headerHelper(line);
-			header.ialpha = ialpha;
+			_header.ialpha = ialpha;
 		}
 		else if (found_BETA != string::npos) {
 			vector<double> ibeta = headerHelper(line);
-			header.ibeta = ibeta;
+			_header.ibeta = ibeta;
 		}
 		// Finding GPS to UTC Time Correction
 		else if (found_UTC != string::npos) {
@@ -154,11 +168,11 @@ void R2NavData::readNav(std::ifstream& infile) {
 			double A1 = stod(line.substr(21, 21)); dUTC.push_back(A1);
 			double tUTC = stod(line.substr(42, 9)); dUTC.push_back(tUTC);
 			double week = stod(line.substr(51, line.length())); dUTC.push_back(week);
-			header.dUTC = dUTC;
+			_header.dUTC = dUTC;
 		}
 		// Finding Leap Seconds
 		else if (found_LEAP != string::npos) {
-			header.leap = stoi(line.substr(0, 6));
+			_header.leap = stoi(line.substr(0, 6));
 		}
 		// Finding End of Header Info
 		else if (found_END != string::npos) {
@@ -167,7 +181,7 @@ void R2NavData::readNav(std::ifstream& infile) {
 	}
 
 	// Create GPS Navigation data holder
-	map<int, vector<R2NavData::DataGPS>> mapGPS;
+	map<int, vector<Rinex2Nav::DataGPS>> mapGPS;
 
 	// Reading Navigation Data Body
 	while (!infile.eof()) {
@@ -183,7 +197,7 @@ void R2NavData::readNav(std::ifstream& infile) {
 		// New block of navigation message
 		if (nlines == 8) {
 			// Now we must process the block of lines
-			R2NavData::DataGPS GPS = epochNavOrganizer(block);
+			Rinex2Nav::DataGPS GPS = epochNavOrganizer(block);
 			block.clear(); nlines = 0;
 			// Add organized data to data holder
 			// Save to Map: if PRN exists in map, then add NavInfo to vector of structs
@@ -200,5 +214,5 @@ void R2NavData::readNav(std::ifstream& infile) {
 		}
 	}
 	// Update the attribute of Navigation Object
-	navData = mapGPS;
+	_navDataGPS = mapGPS;
 }

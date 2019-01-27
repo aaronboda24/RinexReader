@@ -4,7 +4,7 @@ THIS IS A LOG FILE FOR THE RINEX FILE READER.
 THIS FILE CONTAINS RECORDS OF ANY UNEXPECTED BREAKS OR MISSING INFORMATION IN DATA FILES.
 -----------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------
-OBSERVATION FILE NAME: Input/Obs.17o
+OBSERVATION FILE NAME: Input/Rinex3/OBS.rnx
 
 EPOCH INFORMATION             PRN                 MISSING OBSERVATION 
 -----------------------------------------------------------------------------------------

@@ -2,7 +2,6 @@
 /*
 * StringUtils.h
 * Custom functions used for string manipulation
-*
 *  Created on: Jun 10, 2018
 *      Author: Aaron Boda
 */
@@ -15,6 +14,6 @@
 // Functions
 std::string replaceChars(std::string str, char ch1, char ch2);
 void eraseSubStr(std::string & mainStr, const std::string & toErase);
-std::string HHMMSS(int hours, int mins, int secs);
+std::string HHMMSS(double hours, double mins, double secs);
 
 #endif /* STRINGUTILS_H_ */

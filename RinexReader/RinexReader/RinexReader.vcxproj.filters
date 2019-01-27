@@ -21,16 +21,22 @@
     <ClInclude Include="FileIO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="R2NavData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="R2ObsData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StringUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TimeUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rinex2Nav.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rinex2Obs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rinex3Nav.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rinex3Obs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,16 +50,22 @@
     <ClCompile Include="FileIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="R2NavData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="R2ObsData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TimeUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rinex2Nav.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rinex2Obs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rinex3Nav.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rinex3Obs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

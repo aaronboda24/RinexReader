@@ -1,31 +1,30 @@
 /*
-* R2ObsData.cpp
+* Rinex2Obs.cpp
 * Read and organize Rinex v2 observation file in epochwise manner
-*
 *  Created on: Jun 16, 2018
 *      Author: Aaron Boda
 */
 
 #include "pch.h"
-#include "R2ObsData.h"
+#include "Rinex2Obs.h"
 
 using namespace std;
 
 // CONSTRUCTOR AND DESTRUCTOR DEFINITIONS
-R2ObsData::R2ObsData() {}
-R2ObsData::~R2ObsData() {}
+Rinex2Obs::Rinex2Obs() {}
+Rinex2Obs::~Rinex2Obs() {}
 
 // A function to organize specific observation type (for ex: prn - > pseudorange map) 
 // PRN - > Pseudorange Map is used for satellite position
-map<int, double> R2ObsData::specificObsMapper(map<int, vector<double>> obsGPS, vector<string> obsTypes, string specificObs) {
+map<int, double> Rinex2Obs::specificObsMapper(map<int, vector<double>> _obsGPS, vector<string> obsTypes, string specificObs) {
 	map<int, double> rangeMap;
-	map<int, vector<double>>::iterator it = obsGPS.begin();
+	map<int, vector<double>>::iterator it = _obsGPS.begin();
 	size_t ind = std::find(obsTypes.begin(), obsTypes.end(), specificObs) - obsTypes.begin();
 	if (ind >= obsTypes.size()) {
 		cout << "Requested C1 Observation is Unavailable" << endl;
 	}
 	else if (ind < obsTypes.size()) {
-		for (it = obsGPS.begin(); it != obsGPS.end(); ++it) {
+		for (it = _obsGPS.begin(); it != _obsGPS.end(); ++it) {
 			rangeMap.insert(std::pair<int, double>(it->first, it->second.at(ind)));
 		}
 	}
@@ -33,7 +32,7 @@ map<int, double> R2ObsData::specificObsMapper(map<int, vector<double>> obsGPS, v
 }
 
 // This function extracts and stores the header information from Rinex v3 File
-void R2ObsData::obsHeader(ifstream& infile) {
+void Rinex2Obs::obsHeader(ifstream& infile) {
 	// String tokens to look for
 	const string sTokenVER = "RINEX VERSION / TYPE";
 	const string sTokenPOS = "APPROX POSITION XYZ";
@@ -72,7 +71,7 @@ void R2ObsData::obsHeader(ifstream& infile) {
 			istringstream iss(line);
 			// Rinex type should be stored in 4th word of line
 			vector<string> words{ istream_iterator<string>{iss}, istream_iterator<string>{} };
-			header.rinexType = words[3];
+			_header.rinexType = words[3];
 			words.clear();
 		}
 		// Approximate Position
@@ -80,16 +79,16 @@ void R2ObsData::obsHeader(ifstream& infile) {
 			istringstream iss(line);
 			copy(istream_iterator<double>(iss),
 				istream_iterator<double>(),
-				back_inserter(header.approxPosXYZ));
+				back_inserter(_header.approxPosXYZ));
 			// Adding a term for Clock Offset
-			header.approxPosXYZ.push_back(0);
+			_header.approxPosXYZ.push_back(0);
 		}
 		// Antenna Delta
 		else if (found_DEL != string::npos) {
 			istringstream iss(line);
 			copy(istream_iterator<double>(iss),
 				istream_iterator<double>(),
-				back_inserter(header.antDeltaHEN));
+				back_inserter(_header.antDeltaHEN));
 		}
 		// Types of Observations
 		else if (found_OBS != string::npos) {
@@ -98,25 +97,25 @@ void R2ObsData::obsHeader(ifstream& infile) {
 			// Sepearate words from line and add to vector
 			istringstream iss(line);
 			vector<string> words{ istream_iterator<string>{iss}, istream_iterator<string>{} };
-			header.nObsTypes = stoi(words[0]);
+			_header.nObsTypes = stoi(words[0]);
 			for (int i = 1; i < (int)words.size(); i++) {
-				header.obsTypes.push_back(words[i]);
+				_header.obsTypes.push_back(words[i]);
 			}
-			obsTypesGPS = header.obsTypes;
+			_obsTypesGPS = _header.obsTypes;
 		}
 		// Time of First Obs
 		else if (found_FIR != string::npos) {
 			istringstream iss(line);
 			copy(istream_iterator<double>(iss),
 				istream_iterator<double>(),
-				back_inserter(header.firstObsTime));
+				back_inserter(_header.firstObsTime));
 		}
 		// Time of Last Obs
 		else if (found_LAS != string::npos) {
 			istringstream iss(line);
 			copy(istream_iterator<double>(iss),
 				istream_iterator<double>(),
-				back_inserter(header.lastObsTime));
+				back_inserter(_header.lastObsTime));
 		}
 		// Finding End of Header Info
 		else if (found_END != string::npos) {
@@ -207,7 +206,7 @@ void rinex2ObsOrganizer(vector<string> block, vector<int> satellites, int nObsTy
 }
 
 // This function extracts and stores epochwise observations from file
-void R2ObsData::obsEpoch(ifstream& infile, ofstream& logfile, int nObsTypes) {
+void Rinex2Obs::obsEpoch(ifstream& infile, ofstream& logfile, int nObsTypes) {
 	// Rinex v2 special identifier for new epoch of observations
 	const string sTokenEpoch = "G";
 	const string sTokenCOM = "COMMENT";
@@ -217,7 +216,11 @@ void R2ObsData::obsEpoch(ifstream& infile, ofstream& logfile, int nObsTypes) {
 	vector<string> block;
 	int nLines = 0, bLines = 0;
 	// Reading line by line...
-	while (!infile.eof()) {
+
+	while (!(infile >> std::ws).eof()) {
+		// *** Deal with end of file error
+		if (infile.fail()) { break; }
+		// *** 
 		line.clear();
 		pos = infile.tellg();
 		// Temporarily store line from input file
@@ -248,10 +251,10 @@ void R2ObsData::obsEpoch(ifstream& infile, ofstream& logfile, int nObsTypes) {
 		if ((found_ID != string::npos)) {
 			if (block.size() == 0) {
 				// Extract Epoch Information 
-				obsData.epochRecord = rinex2EpochRecordOrganizer(line);
+				_obsDataGPS.epochRecord = rinex2EpochRecordOrganizer(line);
 				// Determine if PRN info carries to next line based on nObsTypes
 				string tokSats = line.substr(29, 3);
-				obsData.nSats = stoi(tokSats);
+				_obsDataGPS.nSats = stoi(tokSats);
 				// Store Receiver Clock Offset if available
 				string rco = "0";
 				if (line.length() == 80) {
@@ -260,19 +263,19 @@ void R2ObsData::obsEpoch(ifstream& infile, ofstream& logfile, int nObsTypes) {
 						rco = "0";
 					}
 				}
-				obsData.recClockOffset = stod(rco);
+				_obsDataGPS.recClockOffset = stod(rco);
 				// Read next line if necessary (PRN info carries to next line)
 				line = line.substr(32, 36);
-				if (obsData.nSats > 12) {
+				if (_obsDataGPS.nSats > 12) {
 					string line2;
 					getline(infile, line2, '\n');
 					line2 = line2.substr(32, 36);
 					line = line + line2;
 				}
 				// Create vector of PRN's in current epoch
-				obsData.sats = rinex2SatOrganizer(line);
+				_obsDataGPS.sats = rinex2SatOrganizer(line);
 				// Number of possible lines in epoch block
-				bLines = obsData.nSats;
+				bLines = _obsDataGPS.nSats;
 				if (nObsTypes > 5) { bLines = bLines * 2; }
 			}
 		}
@@ -287,30 +290,30 @@ void R2ObsData::obsEpoch(ifstream& infile, ofstream& logfile, int nObsTypes) {
 	map<int, vector<double>> mapSatObs;
 	map<int, vector<int>> mapObsLLI;
 	map<int, vector<int>> mapObsSS;
-	rinex2ObsOrganizer(block, obsData.sats, nObsTypes, mapSatObs, mapObsLLI, mapObsSS);
-	obsData.observations = mapSatObs;
-	obsData.LLI = mapObsLLI;
-	obsData.SS = mapObsSS;
-	obsData.gpsTime = gpsTime(obsData.epochRecord);
-	obsGPS = obsData.observations;
+	rinex2ObsOrganizer(block, _obsDataGPS.sats, nObsTypes, mapSatObs, mapObsLLI, mapObsSS);
+	_obsDataGPS.observations = mapSatObs;
+	_obsDataGPS.LLI = mapObsLLI;
+	_obsDataGPS.SS = mapObsSS;
+	_obsDataGPS.gpsTime = gpsTime(_obsDataGPS.epochRecord);
+	_obsGPS = _obsDataGPS.observations;
 }
 
 // To clear contents in observation data structure
-void R2ObsData::clearObs() {
-	obsData.epochRecord.clear();
-	obsData.gpsTime = NULL;
-	obsData.nSats = NULL;
-	obsData.observations.clear();
-	obsData.recClockOffset = NULL;
-	obsData.sats.clear();
+void Rinex2Obs::clearObs() {
+	_obsDataGPS.epochRecord.clear();
+	_obsDataGPS.gpsTime = NULL;
+	_obsDataGPS.nSats = NULL;
+	_obsDataGPS.observations.clear();
+	_obsDataGPS.recClockOffset = NULL;
+	_obsDataGPS.sats.clear();
 }
 
-// To clear contents in header data structure
-void R2ObsData::clearHeader() {
-	header.antDeltaHEN.clear();
-	header.approxPosXYZ.clear();
-	header.firstObsTime.clear();
-	header.lastObsTime.clear();
-	header.obsTypes.clear();
-	header.rinexType.clear();
+// To clear contents in _header data structure
+void Rinex2Obs::clearHeader() {
+	_header.antDeltaHEN.clear();
+	_header.approxPosXYZ.clear();
+	_header.firstObsTime.clear();
+	_header.lastObsTime.clear();
+	_header.obsTypes.clear();
+	_header.rinexType.clear();
 }

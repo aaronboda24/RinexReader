@@ -1,9 +1,10 @@
 #pragma once
+
 /*
-* R2NavData.h
+* Rinex2Nav.h
 * Read and organize Rinex v2 navigation/ephemeris file 
-*
-*  Created on: Jun 12, 2018
+* Created on: Jun 12, 2018
+* Updated on: Jan 21, 2018
 *      Author: Aaron Boda
 */
 
@@ -11,19 +12,19 @@
 #include "StringUtils.h"
 #include "TimeUtils.h"
 
-#ifndef R2NAVDATA_H_
-#define R2NAVDATA_H_
+#ifndef RINEX2NAV_H_
+#define RINEX2NAV_H_
 
-class R2NavData
+class Rinex2Nav
 {
 public:
 	// CONSTRUCTOR
-	R2NavData();
+	Rinex2Nav();
 	// DESTRUCTOR
-	~R2NavData();
+	~Rinex2Nav();
 
 	// Data Structures
-	struct HeaderGPS {
+	struct NavHeaderGPS {
 		// Ionospheric alpha and beta constants
 		std::vector<double> ialpha;
 		std::vector<double> ibeta;
@@ -73,14 +74,15 @@ public:
 	}; 
 	
 	// Attributes
-	HeaderGPS header;
-	std::map<int, std::vector<R2NavData::DataGPS>> navData;
+	NavHeaderGPS _header;
+	std::map<int, std::vector<Rinex2Nav::DataGPS>> _navDataGPS;
 
 	// Functions
-	void readNav(std::ifstream& inputfileGPS);
+	void readNav(std::ifstream& inputNavfileGPS);
+	int EpochMatcher(double obsTime, std::vector<Rinex2Nav::DataGPS> NAV);
 
 private:
 
 };
 
-#endif /* R3NAVDATA_H_ */
+#endif /* RINEX2NAV_H_ */

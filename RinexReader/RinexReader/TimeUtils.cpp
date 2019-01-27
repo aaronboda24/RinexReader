@@ -1,7 +1,6 @@
 /*
 * TimeUtils.cpp
 * Functions used for time system conversions
-*
 *  Created on: Jun 10, 2018
 *      Author: Aaron Boda
 */

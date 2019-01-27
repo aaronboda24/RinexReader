@@ -1,7 +1,6 @@
 /*
 * StringUtils.cpp
 * Custom functions used for string manipulation
-*
 *  Created on: Jun 10, 2018
 *      Author: Aaron Boda
 */
@@ -31,11 +30,11 @@ void eraseSubStr(string & mainStr, const string & toErase) {
 }
 
 // A function to define time in HH:MM:SS format
-string HHMMSS(int hours, int mins, int secs) {
+string HHMMSS(double hours, double mins, double secs) {
 	stringstream ss;
-	ss << std::setw(2) << std::setfill('0') << hours << ":";
-	ss << std::setw(2) << std::setfill('0') << mins << ":";
-	ss << std::setw(2) << std::setfill('0') << secs;
+	ss << std::setw(2) << std::setfill('0') << (int)hours << ":";
+	ss << std::setw(2) << std::setfill('0') << (int)mins << ":";
+	ss << std::setw(2) << std::setfill('0') << (int)secs;
 	string hms = ss.str();
 	return hms;
 }
