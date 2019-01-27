@@ -1,6 +1,6 @@
 # RinexReader
 
-RINEX is a standardazied file format which is used to store raw GNSS observation data. This program supports RINEX v2.x (GPS only) and RINEX v3.x (GPS, GLONASS, GALILEO). You can find more info here: https://kb.igs.org/hc/en-us/articles/115003980188-RINEX-2-11
+RINEX is a standardazied file format which is used to store raw GNSS observation data. This program supports RINEX v2.x (GPS only) and RINEX v3.x (GPS, GLONASS, GALILEO). You can find more information [here](https://kb.igs.org/hc/en-us/articles/115003980188-RINEX-2-11).
 
 ## Motivation
 
@@ -16,7 +16,7 @@ For instructions on how to use this program, you can check out "RinexReader.cpp"
 
 ## Reporting Bugs
 
-This is a work in progress. Kindly report any bugs to aaronboda.gh@mail.com along with the observation files and a brief explanation.
+This is a work in progress. Kindly report any bugs to aaronboda.gh@mail.com along with the observation files and a brief explanation on how to recreate the problem.
 
 ## License
 
